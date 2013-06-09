@@ -24,7 +24,10 @@ class Capistrano::Notifier::Base
   def git_log
     return unless git_range
 
-    `git log #{git_range} --no-merges --format=format:"%h %s (%an)"`
+    command = "git log #{git_range} --no-merges --format=format:'%h %s (%an)'"
+    return cap.capture("cd #{cap.current_path} && #{command}") if cap.exists?(:notifier_git_remote) && cap.fetch(:notifier_git_remote)
+    
+    `#{command}`
   end
 
   def git_previous_revision
